@@ -14,11 +14,8 @@ const parser = new Parser({ timeout: 10000 });
 // Austrian RSS feeds - verified working sources
 const DEFAULT_FEEDS = [
   { url: 'https://rss.orf.at/news.xml', source: 'ORF News' },
-  { url: 'https://rss.orf.at/nachrichten.xml', source: 'ORF Nachrichten' },
   { url: 'https://www.derstandard.at/rss', source: 'Der Standard' },
   { url: 'https://www.diepresse.com/rss', source: 'Die Presse' },
-  { url: 'https://www.vienna.at/rss.xml', source: 'Vienna Online' },
-  { url: 'https://www.oe24.at/feed', source: 'Oe24' },
 ];
 
 let cache: { items: FeedItem[]; expiresAt: number } | null = null;
