@@ -4,11 +4,13 @@ import { fetchFeeds } from '@/lib/rss';
 export async function GET() {
   try {
     // Fetch new articles from RSS feeds and save to database
-    const items = await fetchFeeds(undefined, 50);
+    const items = await fetchFeeds(undefined, 100);
     
     return NextResponse.json({ 
       success: true, 
-      message: `Synced ${items.length} articles from RSS feeds` 
+      message: `Synced ${items.length} articles from RSS feeds`,
+      count: items.length,
+      items: items.slice(0, 5) // Return first 5 as sample
     });
   } catch (err) {
     console.error('RSS sync failed:', err);
