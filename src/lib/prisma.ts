@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaLibSql } from '@prisma/adapter-libsql';
-import { createClient } from '@libsql/client';
 
 declare global {
   // allow global prisma during development to avoid exhausting connections
@@ -18,7 +17,9 @@ const getDatabaseUrl = () => {
   return url;
 };
 
-const adapter = new PrismaLibSql(getDatabaseUrl() as any);
+const adapter = new PrismaLibSql({
+  url: getDatabaseUrl(),
+});
 
 export const prisma =
   globalForPrisma.prisma ||
