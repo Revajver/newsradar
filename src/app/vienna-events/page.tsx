@@ -4,6 +4,8 @@ export const metadata = {
   title: 'Vienna Events - newsradar',
 };
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export default async function ViennaEventsPage() {
   const events = await fetchViennaEvents();
 
