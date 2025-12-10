@@ -11,22 +11,24 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^4.16.2",
+    "@prisma/adapter-libsql": "^7.1.0",
     "bootstrap": "^5.3.8",
     "dotenv": "^17.2.3",
+    "libsql": "^0.5.22",
     "next": "16.0.8",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
+    "@prisma/client": "^7.1.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.8",
-    "prisma": "^4.16.2",
+    "prisma": "^7.1.0",
     "typescript": "^5"
   }
 }

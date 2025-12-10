@@ -9,10 +9,22 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, content } = body;
-    if (!title || !content) return NextResponse.json({ error: 'title and content required' }, { status: 400 });
+    const { title, content, sourceUrl, source, link, imageUrl, publishedAt } = body;
+    if (!title || !content || !sourceUrl || !source || !link) {
+      return NextResponse.json({ error: 'title, content, sourceUrl, source, and link are required' }, { status: 400 });
+    }
 
-    const created = await prisma.article.create({ data: { title, content } });
+    const created = await prisma.article.create({ 
+      data: { 
+        title, 
+        content, 
+        sourceUrl,
+        source,
+        link,
+        imageUrl,
+        publishedAt: publishedAt ? new Date(publishedAt) : new Date()
+      } 
+    });
     return NextResponse.json(created, { status: 201 });
   } catch (err) {
     console.error(err);

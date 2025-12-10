@@ -1,10 +1,21 @@
 import TimeCard from '@/components/TimeCard';
 import EventTable from '@/components/EventTable';
-import { fetchFeeds } from '@/lib/rss';
 import { noImagePlaceholder } from '@/lib/placeholders';
+import prisma from '@/lib/prisma';
+import { Article } from '@prisma/client';
 
 export default async function Home() {
-  const newsItems = await fetchFeeds(undefined, 10);
+  // Load latest articles from database
+  let newsItems: Article[] = [];
+  try {
+    newsItems = await prisma.article.findMany({
+      orderBy: { publishedAt: 'desc' },
+      take: 10,
+    });
+  } catch (err) {
+    // If database is not available during build, just show empty list
+    console.warn('Could not fetch articles from database:', (err as any)?.message ?? err);
+  }
 
   return (
     <div>
@@ -25,12 +36,12 @@ export default async function Home() {
           <div className="news-card">
             {newsItems.length === 0 && <p className="text-muted">No news items yet.</p>}
             <div className="row gx-2 gy-2">
-              {newsItems.map((it, idx) => (
-                <div className="col-12" key={idx}>
+              {newsItems.map((it) => (
+                <div className="col-12" key={it.id}>
                   <article className="card p-2" style={{ minHeight: 72 }}>
                     <div className="d-flex align-items-start">
                       <div style={{ width: 96, flex: '0 0 96px' }} className="me-2">
-                        <img src={it.image || noImagePlaceholder} alt="thumbnail" className="img-fluid rounded" style={{ width: 96, height: 64, objectFit: 'cover' }} />
+                        <img src={it.imageUrl || noImagePlaceholder} alt="thumbnail" className="img-fluid rounded" style={{ width: 96, height: 64, objectFit: 'cover' }} />
                       </div>
 
                       <div className="flex-grow-1">
@@ -39,10 +50,10 @@ export default async function Home() {
                           <span className="badge bg-primary text-white small ms-2">{it.source}</span>
                         </div>
 
-                        <p className="mb-1 text-truncate" style={{ fontSize: '0.85rem' }}>{it.contentSnippet}</p>
+                        <p className="mb-1 text-truncate" style={{ fontSize: '0.85rem' }}>{it.content}</p>
                         <div className="d-flex justify-content-between align-items-center">
                           <a href={it.link} target="_blank" rel="noopener noreferrer" className="small" style={{ backgroundColor: '#333', color: '#fff', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', textDecoration: 'none', display: 'inline-block', fontSize: '0.75rem' }}>Read original</a>
-                          <small className="text-muted small">{it.isoDate ? new Date(it.isoDate).toLocaleString('de-AT', { timeZone: 'Europe/Vienna' }) : ''}</small>
+                          <small className="text-muted small">{it.publishedAt ? new Date(it.publishedAt).toLocaleString('de-AT', { timeZone: 'Europe/Vienna' }) : ''}</small>
                         </div>
                       </div>
                     </div>

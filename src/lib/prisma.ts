@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
+import { createClient } from '@libsql/client';
 
 declare global {
   // allow global prisma during development to avoid exhausting connections
@@ -6,22 +8,24 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
-// Ensure DATABASE_URL is loaded from .env
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  console.warn('Warning: DATABASE_URL is not set. Prisma may fail to initialize.');
-}
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Pass datasources explicitly so PrismaClient can initialize under Prisma v7
-const clientOptions: any = {
-  datasources: {
-    db: {
-      url: databaseUrl,
-    },
-  },
+const getDatabaseUrl = () => {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
+  return url;
 };
 
-export const prisma = global.prisma ?? new PrismaClient(clientOptions);
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
+const adapter = new PrismaLibSql(getDatabaseUrl() as any);
+
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    adapter,
+  });
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export default prisma;

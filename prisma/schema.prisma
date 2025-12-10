@@ -7,12 +7,16 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url = env("DATABASE_URL")
 }
 
 model Article {
-  id          Int      @id @default(autoincrement())
-  title       String
-  content     String
-  publishedAt DateTime @default(now()) @map("published_at")
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  sourceUrl String   @unique // RSS link - prevents duplicates
+  source    String   // RSS feed source (ORF, Der Standard, etc)
+  imageUrl  String?
+  link      String   // Original article link
+  publishedAt DateTime
+  createdAt DateTime @default(now())
 }

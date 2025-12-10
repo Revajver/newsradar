@@ -1,4 +1,5 @@
 import Parser from 'rss-parser';
+import prisma from './prisma';
 
 type FeedItem = {
   title: string;
@@ -66,6 +67,39 @@ export async function fetchFeeds(feeds = DEFAULT_FEEDS, maxItems = 50) {
     const db = b.isoDate ? Date.parse(b.isoDate) : 0;
     return db - da;
   });
+
+  // Save new articles to database
+  await Promise.all(
+    results.map(async (item) => {
+      if (!item.link) return; // Skip items without links
+      
+      try {
+        // Check if article already exists
+        const existing = await prisma.article.findUnique({
+          where: { sourceUrl: item.link },
+        });
+        
+        if (!existing) {
+          // Save new article
+          await prisma.article.create({
+            data: {
+              title: item.title,
+              content: item.contentSnippet || '',
+              sourceUrl: item.link,
+              source: item.source || 'Unknown',
+              link: item.link,
+              imageUrl: item.image,
+              publishedAt: item.isoDate ? new Date(item.isoDate) : new Date(),
+            },
+          });
+        }
+      } catch (err) {
+        // Silently fail on duplicate or db errors
+        // eslint-disable-next-line no-console
+        console.warn('Failed to save article:', item.link, (err as any)?.message ?? err);
+      }
+    })
+  );
 
   cache = { items: results, expiresAt: now + 1000 * 60 * 10 }; // cache 10 minutes
   return results.slice(0, maxItems);
