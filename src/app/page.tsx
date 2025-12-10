@@ -41,7 +41,7 @@ export default async function Home() {
 
                         <p className="mb-1 text-truncate" style={{ fontSize: '0.85rem' }}>{it.contentSnippet}</p>
                         <div className="d-flex justify-content-between align-items-center">
-                          <a href={it.link} target="_blank" rel="noopener noreferrer" className="small">Read original</a>
+                          <a href={it.link} target="_blank" rel="noopener noreferrer" className="small" style={{ backgroundColor: '#333', color: '#fff', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', textDecoration: 'none', display: 'inline-block', fontSize: '0.75rem' }}>Read original</a>
                           <small className="text-muted small">{it.isoDate ? new Date(it.isoDate).toLocaleString('de-AT', { timeZone: 'Europe/Vienna' }) : ''}</small>
                         </div>
                       </div>
